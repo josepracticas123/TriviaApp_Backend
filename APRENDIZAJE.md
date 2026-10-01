@@ -33,12 +33,42 @@ En cada reto anota:
 
 ## 02 · Devuelve preguntas
 
-- Lo que he construido: pendiente.
-- Conceptos y explicación propia: pendiente.
-- Pruebas y resultados: pendiente.
-- Error y solución: pendiente.
-- Dudas: pendiente.
-- PR y correcciones: pendiente.
+- Lo que he construido:
+  - He creado la interfaz `Pregunta` con `id`, `enunciado`, `opciones` y `respuestaCorrecta`.
+  - He creado una colección en memoria con 5 preguntas.
+  - He creado `GET /api/questions` para listar las preguntas.
+  - He creado `GET /api/questions/:id` para obtener una pregunta concreta.
+  - Las respuestas públicas solo muestran `id`, `enunciado` y `opciones`, por lo que `respuestaCorrecta` no se expone.
+
+- Conceptos y explicación propia:
+  - Una `interface` define la estructura que debe tener un objeto.
+  - `Pregunta[]` significa un array de elementos del tipo `Pregunta`.
+  - Los parámetros de la URL llegan como texto (`string`), aunque el ID de nuestra pregunta es un `number`. Por eso primero valido el texto y después lo convierto con `Number()`.
+  - `find()` busca una pregunta dentro del array y devuelve la pregunta encontrada o `undefined`.
+  - `map()` crea un nuevo array transformando los elementos. Lo he utilizado para preparar una versión pública de las preguntas sin `respuestaCorrecta`.
+  - `return` dentro de un `if` termina la ejecución de la ruta cuando se produce un error.
+  - Los códigos `200`, `400` y `404` indican, respectivamente, respuesta correcta, petición incorrecta y recurso no encontrado.
+
+- Pruebas y resultados:
+  - `GET /api/questions` → 200 OK y devuelve las 5 preguntas.
+  - `GET /api/questions/1` → 200 OK y devuelve la pregunta con ID 1.
+  - `GET /api/questions/hola` → 400 y devuelve `"El ID debe ser un número válido"`.
+  - `GET /api/questions/99` → 404 y devuelve `"Pregunta no encontrada"`.
+  - Después de consultar una pregunta, `GET /api/questions` sigue devolviendo las 5 preguntas, por lo que la colección no se modifica.
+  - `npm run typecheck` → correcto.
+  - `npm run build` → correcto.
+
+- Error y solución:
+  - Al principio coloqué el `return res.json(...)` dentro del `if (!pregunta)`. Entendí que no debía estar ahí porque el `return` del error termina la función. La respuesta de la pregunta encontrada debe estar fuera del `if`.
+  - También entendí que no se puede comparar directamente el ID numérico de la pregunta con el parámetro de la URL sin convertirlo, porque el parámetro llega como `string`.
+
+- Dudas:
+  - He entendido la diferencia entre `string` y `number` en los parámetros de una URL y cómo convertirlos.
+  - También he entendido la diferencia entre `find()` para buscar un elemento y `map()` para crear un nuevo array a partir de los elementos existentes.
+
+- PR y correcciones:
+  - Pendiente de crear el commit, subir la rama y abrir la PR hacia `develop`.
+  - La PR se dejará abierta para revisión del tutor y no se hará el merge manualmente.
 
 ## 03 · Modifica tus datos
 
