@@ -1,0 +1,54 @@
+# 16 · Crea una partida para dos
+
+**Tu misión:** Amplía las partidas con modo multijugador: una persona crea una sala y otra entra con un código. Todavía usarás únicamente HTTP.
+
+**Antes:** El [reto 15](15-filtros-paginacion-cors.md) debe estar aprobado e integrado en develop.
+
+**Aprenderás:** Participantes, código de invitación y estados WAITING, ACTIVE y FINISHED.
+
+## Trabajo por bloques
+
+1. Mantén el modo individual. POST /api/games con modo MULTIPLAYER crea una partida WAITING y un código aleatorio único; POST /api/games/join recibe el código.
+
+2. Añade participantes con restricciones únicas por partida y usuario. Rechaza un tercer jugador y decide dentro de una operación atómica quién ocupa la segunda plaza.
+
+3. El creador inicia con POST /api/games/:id/start cuando hay dos jugadores. Asigna cinco preguntas compartidas y establece primer turno y estado ACTIVE.
+
+## Comprueba tu entrega
+
+- [ ] Crear una sala vincula al creador y devuelve un código que permite entrar a otro usuario.
+- [ ] Entrar otra vez no duplica al participante y dos intentos simultáneos no permiten superar dos jugadores.
+- [ ] Código desconocido, sala llena o ya iniciada producen errores documentados.
+- [ ] Solo el creador puede iniciar; con un solo participante o partida ya iniciada se rechaza.
+- [ ] Un usuario que no pertenece a la sala no puede consultar su estado aunque conozca el ID.
+- [ ] Modo individual e historial siguen funcionando; Swagger describe las nuevas rutas.
+- [ ] `npm run typecheck` y `npm run build` pasan; he comprobado que lo anterior sigue funcionando.
+- [ ] He actualizado `APRENDIZAJE.md`, anotado las pruebas y abierto el PR hacia `develop` sin hacer merge.
+
+## Demostración al tutor
+
+Demuestra creación, entrada y comienzo con dos cuentas. ¿Por qué una comprobación de plazas fuera de una transacción puede fallar?
+
+## Pistas
+
+El código es una invitación para entrar, no un sustituto de la autenticación. Apoya la unicidad con restricciones de DB.
+
+## Documentación
+
+- [Transacciones Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/transactions)
+
+## Registro de entrega y revisión
+
+Estado inicial: **Pendiente**. Los checks son la autoevaluación del alumno; el cierre lo confirma el tutor.
+
+- PR y commit revisado: pendiente.
+- Prueba correcta (petición/acción y resultado): pendiente.
+- Prueba inválida o fallo (petición/acción y resultado): pendiente.
+- Comandos y resultados: pendiente.
+- Dudas o correcciones: pendiente.
+- Revisión y aprobación del tutor: pendiente.
+- Merge en `develop`: pendiente.
+
+No empieces el siguiente reto hasta que este PR esté aprobado e integrado. Las correcciones van en la misma rama y el mismo PR.
+
+[Volver al README](../README.md) · [Reto 15](15-filtros-paginacion-cors.md) · [Reto 17](17-turnos-concurrencia.md)
