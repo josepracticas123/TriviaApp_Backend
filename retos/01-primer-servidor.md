@@ -28,7 +28,9 @@
 
 ¿Qué diferencia hay entre ejecutar TypeScript con tsx y comprobarlo con tsc? ¿Por qué app.ts no abre el puerto?
 
--"tsx me permite ejecutar mi TypeScript durante el desarrollo. tsc analiza y comprueba que el código TypeScript sea correcto, y con npm run build además genera el JavaScript que después ejecutamos con Node."
+- `tsx` me permite ejecutar directamente el código TypeScript durante el desarrollo, sin tener que compilarlo antes. `tsc` comprueba que el código cumple las reglas de TypeScript y detecta errores de tipos. Con `npm run build`, `tsc` además genera el JavaScript que después puede ejecutar Node.
+
+- `app.ts` se encarga de configurar la aplicación Express, como crear `app`, añadir middleware y definir las rutas. No abre el puerto porque esa responsabilidad está separada en `server.ts`, que importa `app` y utiliza `app.listen()` para poner el servidor a escuchar en un puerto.
 
 ## Pistas
 
@@ -43,11 +45,11 @@ Prueba curl -i http://localhost:3000/health. El navegador basta para GET, pero n
 
 Estado inicial: **Pendiente**. Los checks son la autoevaluación del alumno; el cierre lo confirma el tutor.
 
-- PR y commit revisado: pendiente.
-- Prueba correcta (petición/acción y resultado): pendiente.
-- Prueba inválida o fallo (petición/acción y resultado): pendiente.
-- Comandos y resultados: pendiente.
-- Dudas o correcciones: pendiente.
+- PR y commit de entrega: PR #1 — https://github.com/josepracticas123/trivia-app-backend/pull/1 — commit pendiente de crear tras las correcciones.
+- Prueba correcta (petición/acción y resultado): `GET /health` en `http://localhost:3000/health` devuelve HTTP 200 y `{ "status": "ok" }`.
+- Prueba inválida o fallo (petición/acción y resultado): se configuró `PORT=hola`; el servidor no arrancó y mostró el error `PORT debe ser un número entero entre 1 y 65535`.
+- Comandos y resultados: `npm run typecheck` y `npm run build` finalizan correctamente sin errores. También se comprobó `npm start` y el cambio de puerto mediante `PORT=4000`.
+- Dudas o correcciones: se corrigieron los comentarios de `src/server.ts` y `src/app.ts` siguiendo la revisión del tutor. También se completó la explicación sobre la separación entre `app.ts` y `server.ts` y sobre la diferencia entre ejecutar con `tsx` y comprobar el código con `tsc`.
 - Revisión y aprobación del tutor: pendiente.
 - Merge en `develop`: pendiente.
 
