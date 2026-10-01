@@ -8,5 +8,9 @@ app.use(express.json());
 
 // Ruta de bienvenida de la base. /health lo implementarás en el reto 01.
 app.get("/", (_req, res) => {
-  res.json({ message: "Bienvenido a TriviaApp Backend" });
+  res.json({ message: "Bienvenido a TriviaApp Backend"  });
+});
+//Comprueba que el servidor está disponible.
+app.get("/health", (_req, res) => {
+  res.json({ status: "ok" });
 });
