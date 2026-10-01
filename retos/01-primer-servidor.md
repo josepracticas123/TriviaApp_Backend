@@ -16,17 +16,19 @@
 
 ## Comprueba tu entrega
 
-- [ ] GET / devuelve la bienvenida y GET /health devuelve el JSON acordado con estado 200.
-- [ ] npm run dev recarga al guardar; npm run typecheck y npm run build terminan sin errores.
-- [ ] npm start ejecuta la versión compilada; puedo detenerla con Ctrl+C.
-- [ ] Cambiar PORT en .env y reiniciar cambia el puerto; un valor inválido da un error comprensible.
-- [ ] .env está ignorado y .env.example conserva solo valores de ejemplo.
-- [ ] `npm run typecheck` y `npm run build` pasan; he comprobado que lo anterior sigue funcionando.
-- [ ] He actualizado `APRENDIZAJE.md`, anotado las pruebas y abierto el PR hacia `develop` sin hacer merge.
+- [x] GET / devuelve la bienvenida y GET /health devuelve el JSON acordado con estado 200.
+- [x] npm run dev recarga al guardar; npm run typecheck y npm run build terminan sin errores.
+- [x] npm start ejecuta la versión compilada; puedo detenerla con Ctrl+C.
+- [x] Cambiar PORT en .env y reiniciar cambia el puerto; un valor inválido da un error comprensible.
+- [x] .env está ignorado y .env.example conserva solo valores de ejemplo.
+- [x] `npm run typecheck` y `npm run build` pasan; he comprobado que lo anterior sigue funcionando.
+- [x] He actualizado `APRENDIZAJE.md`, anotado las pruebas y abierto el PR hacia `develop` sin hacer merge.
 
 ## Demostración al tutor
 
 ¿Qué diferencia hay entre ejecutar TypeScript con tsx y comprobarlo con tsc? ¿Por qué app.ts no abre el puerto?
+
+-"tsx me permite ejecutar mi TypeScript durante el desarrollo. tsc analiza y comprueba que el código TypeScript sea correcto, y con npm run build además genera el JavaScript que después ejecutamos con Node."
 
 ## Pistas
 
