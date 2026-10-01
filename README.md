@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-# TriviaApp_Backend
-Proyecto de  preguntas con backend.
-
-=======
 # TriviaApp Backend · Aprende backend por retos
 
 Vas a construir una API de preguntas con TypeScript. Empezarás con rutas y datos en memoria; terminarás con usuarios, PostgreSQL, Swagger y partidas para dos jugadores, conectadas a un frontend publicado.
@@ -22,20 +17,20 @@ Primero funcionará todo por HTTP. Después los sockets avisarán de los cambios
 
 ## Herramientas y cuándo aparecen
 
-| Herramienta | Para qué sirve | Cuándo |
-| --- | --- | --- |
-| Node 24 LTS, npm | Ejecutar el backend e instalar paquetes | Base |
-| Express 5 | Rutas, peticiones y respuestas | Base |
-| TypeScript y tipos de Node/Express | Detectar errores de tipos | Base |
-| tsx | Ejecutar TypeScript y reiniciar al guardar | Base |
-| Zod | Validar datos recibidos | 04 |
-| swagger-jsdoc, swagger-ui-express | OpenAPI y página para probar la API | 05 |
-| PostgreSQL, Prisma y adaptador compatible | Persistencia, consultas y migraciones | 06 |
-| argon2 | Hash de contraseñas | 10 |
-| jsonwebtoken | Firmar y verificar JWT | 11 |
-| cors | Permitir llamadas desde el frontend en el navegador | 15 |
-| Socket.IO | Avisar a los participantes de cambios | 18 |
-| React, Vite, socket.io-client | Frontend en su repositorio | 20 |
+| Herramienta                               | Para qué sirve                                      | Cuándo |
+| ----------------------------------------- | --------------------------------------------------- | ------ |
+| Node 24 LTS, npm                          | Ejecutar el backend e instalar paquetes             | Base   |
+| Express 5                                 | Rutas, peticiones y respuestas                      | Base   |
+| TypeScript y tipos de Node/Express        | Detectar errores de tipos                           | Base   |
+| tsx                                       | Ejecutar TypeScript y reiniciar al guardar          | Base   |
+| Zod                                       | Validar datos recibidos                             | 04     |
+| swagger-jsdoc, swagger-ui-express         | OpenAPI y página para probar la API                 | 05     |
+| PostgreSQL, Prisma y adaptador compatible | Persistencia, consultas y migraciones               | 06     |
+| argon2                                    | Hash de contraseñas                                 | 10     |
+| jsonwebtoken                              | Firmar y verificar JWT                              | 11     |
+| cors                                      | Permitir llamadas desde el frontend en el navegador | 15     |
+| Socket.IO                                 | Avisar a los participantes de cambios               | 18     |
+| React, Vite, socket.io-client             | Frontend en su repositorio                          | 20     |
 
 **Por ahora solo están instaladas las herramientas de la base.** Añade cada dependencia cuando su reto la necesite y guarda los cambios de `package.json` y `package-lock.json`. No necesitas `npm init`, un generador, Prisma, Docker ni una DB para empezar el reto 01.
 
@@ -65,15 +60,15 @@ La base **no tiene `/health` todavía**: lo añades en el reto 01. El puerto por
 
 ### Comandos de la base
 
-| Comando | Qué hace |
-| --- | --- |
-| `npm ci` | Instala las versiones exactas del lockfile en un clon limpio |
-| `npm install paquete` | Añade una dependencia cuando toca; actualiza ambos archivos de paquetes |
-| `npm install -D paquete` | Añade una herramienta usada para desarrollar |
-| `npm run dev` | Ejecuta TypeScript con tsx, carga `.env` si existe y reinicia al guardar |
-| `npm run typecheck` | Comprueba tipos sin generar archivos |
-| `npm run build` | Comprueba y compila `src/` a `dist/` |
-| `npm start` | Ejecuta `dist/server.js`; necesita una compilación previa |
+| Comando                  | Qué hace                                                                 |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `npm ci`                 | Instala las versiones exactas del lockfile en un clon limpio             |
+| `npm install paquete`    | Añade una dependencia cuando toca; actualiza ambos archivos de paquetes  |
+| `npm install -D paquete` | Añade una herramienta usada para desarrollar                             |
+| `npm run dev`            | Ejecuta TypeScript con tsx, carga `.env` si existe y reinicia al guardar |
+| `npm run typecheck`      | Comprueba tipos sin generar archivos                                     |
+| `npm run build`          | Comprueba y compila `src/` a `dist/`                                     |
+| `npm start`              | Ejecuta `dist/server.js`; necesita una compilación previa                |
 
 `tsx` ejecuta el código, pero no sustituye la comprobación de tipos. No hay `lint`, `test` ni scripts de DB todavía: se incorporarán cuando exista una herramienta y una comprobación real detrás. Antes de entregar, ejecuta siempre `typecheck` y `build` y las pruebas que ya se hayan incorporado.
 
@@ -224,30 +219,30 @@ El frontend tendrá el mismo flujo en su propio repositorio. En el reto 20 se re
 
 Todos parten como pendientes. **Implementado** significa que el alumno completó su autoevaluación; **pendiente de revisión** significa que el PR está abierto; **cerrado** requiere aprobación e integración del tutor.
 
-| Nº | Reto | Estado |
-| --- | --- | --- |
-| 01 | [Arranca tu backend](retos/01-primer-servidor.md) | Pendiente |
-| 02 | [Devuelve preguntas](retos/02-listar-preguntas.md) | Pendiente |
-| 03 | [Modifica tus datos](retos/03-crud-memoria.md) | Pendiente |
-| 04 | [Valida las peticiones](retos/04-validacion-errores.md) | Pendiente |
-| 05 | [Prueba las rutas en Swagger](retos/05-swagger.md) | Pendiente |
-| 06 | [Prepara PostgreSQL y Prisma](retos/06-postgres-prisma.md) | Pendiente |
-| 07 | [Guarda las preguntas de verdad](retos/07-crud-persistente.md) | Pendiente |
-| 08 | [Organiza el backend](retos/08-rutas-controladores-servicios.md) | Pendiente |
-| 09 | [Relaciona preguntas, opciones y categorías](retos/09-relaciones.md) | Pendiente |
-| 10 | [Registra usuarios](retos/10-registro.md) | Pendiente |
-| 11 | [Inicia sesión](retos/11-login-jwt.md) | Pendiente |
-| 12 | [Protege las rutas](retos/12-autenticacion-permisos.md) | Pendiente |
-| 13 | [Juega una partida individual](retos/13-partida-individual.md) | Pendiente |
-| 14 | [Consulta tu historial](retos/14-historial.md) | Pendiente |
-| 15 | [Prepara las consultas del frontend](retos/15-filtros-paginacion-cors.md) | Pendiente |
-| 16 | [Crea una partida para dos](retos/16-sala-dos-jugadores.md) | Pendiente |
-| 17 | [Juega por turnos mediante HTTP](retos/17-turnos-concurrencia.md) | Pendiente |
-| 18 | [Añade avisos en tiempo real](retos/18-socket-io.md) | Pendiente |
-| 19 | [Recupera una partida al reconectar](retos/19-reconexion.md) | Pendiente |
-| 20 | [Conecta un frontend mínimo](retos/20-frontend.md) | Pendiente |
-| 21 | [Despliega backend, DB y frontend](retos/21-despliegue.md) | Pendiente |
-| 22 | [Entrega y revisión final](retos/22-entrega-final.md) | Pendiente |
+| Nº  | Reto                                                                      | Estado    |
+| --- | ------------------------------------------------------------------------- | --------- |
+| 01  | [Arranca tu backend](retos/01-primer-servidor.md)                         | Pendiente |
+| 02  | [Devuelve preguntas](retos/02-listar-preguntas.md)                        | Pendiente |
+| 03  | [Modifica tus datos](retos/03-crud-memoria.md)                            | Pendiente |
+| 04  | [Valida las peticiones](retos/04-validacion-errores.md)                   | Pendiente |
+| 05  | [Prueba las rutas en Swagger](retos/05-swagger.md)                        | Pendiente |
+| 06  | [Prepara PostgreSQL y Prisma](retos/06-postgres-prisma.md)                | Pendiente |
+| 07  | [Guarda las preguntas de verdad](retos/07-crud-persistente.md)            | Pendiente |
+| 08  | [Organiza el backend](retos/08-rutas-controladores-servicios.md)          | Pendiente |
+| 09  | [Relaciona preguntas, opciones y categorías](retos/09-relaciones.md)      | Pendiente |
+| 10  | [Registra usuarios](retos/10-registro.md)                                 | Pendiente |
+| 11  | [Inicia sesión](retos/11-login-jwt.md)                                    | Pendiente |
+| 12  | [Protege las rutas](retos/12-autenticacion-permisos.md)                   | Pendiente |
+| 13  | [Juega una partida individual](retos/13-partida-individual.md)            | Pendiente |
+| 14  | [Consulta tu historial](retos/14-historial.md)                            | Pendiente |
+| 15  | [Prepara las consultas del frontend](retos/15-filtros-paginacion-cors.md) | Pendiente |
+| 16  | [Crea una partida para dos](retos/16-sala-dos-jugadores.md)               | Pendiente |
+| 17  | [Juega por turnos mediante HTTP](retos/17-turnos-concurrencia.md)         | Pendiente |
+| 18  | [Añade avisos en tiempo real](retos/18-socket-io.md)                      | Pendiente |
+| 19  | [Recupera una partida al reconectar](retos/19-reconexion.md)              | Pendiente |
+| 20  | [Conecta un frontend mínimo](retos/20-frontend.md)                        | Pendiente |
+| 21  | [Despliega backend, DB y frontend](retos/21-despliegue.md)                | Pendiente |
+| 22  | [Entrega y revisión final](retos/22-entrega-final.md)                     | Pendiente |
 
 ## Entrega y despliegue
 
@@ -272,4 +267,3 @@ Emparejamiento automático, temporizadores, chat, recuperación de contraseña, 
 - [Socket.IO](https://socket.io/docs/v4/).
 
 Empieza por [01 · Arranca tu backend](retos/01-primer-servidor.md) después de que el tutor prepare `develop`.
->>>>>>> 54a1cadf51ef931d50b73267611e90993ec32ba6
