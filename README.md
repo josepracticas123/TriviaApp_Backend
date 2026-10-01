@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-# TriviaApp_Backend
-Proyecto de  preguntas con backend.
-
-=======
 # TriviaApp Backend · Aprende backend por retos
 
 Vas a construir una API de preguntas con TypeScript. Empezarás con rutas y datos en memoria; terminarás con usuarios, PostgreSQL, Swagger y partidas para dos jugadores, conectadas a un frontend publicado.
@@ -272,4 +267,4 @@ Emparejamiento automático, temporizadores, chat, recuperación de contraseña, 
 - [Socket.IO](https://socket.io/docs/v4/).
 
 Empieza por [01 · Arranca tu backend](retos/01-primer-servidor.md) después de que el tutor prepare `develop`.
->>>>>>> 54a1cadf51ef931d50b73267611e90993ec32ba6
+
