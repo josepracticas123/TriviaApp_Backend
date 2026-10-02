@@ -108,12 +108,33 @@ En cada reto anota:
 
 ## 04 · Valida las peticiones
 
-- Lo que he construido: pendiente.
-- Conceptos y explicación propia: pendiente.
-- Pruebas y resultados: pendiente.
-- Error y solución: pendiente.
-- Dudas: pendiente.
-- PR y correcciones: pendiente.
+- Lo que he construido: He añadido Zod para validar los datos que llegan a la API en tiempo de ejecución. He creado esquemas para validar las preguntas y los IDs de las preguntas. Las validaciones comprueban que el enunciado no esté vacío, que haya exactamente 4 opciones sin repetir y que la respuesta correcta sea un índice entre 0 y 3. También he rechazado campos inesperados como `id` al crear o modificar preguntas. Además, he añadido middlewares para controlar JSON mal formado, rutas inexistentes y errores internos, usando el formato común `{ error: { code, message } }`.
+
+- Conceptos y explicación propia: TypeScript comprueba los tipos durante el desarrollo, pero no valida los datos que llegan realmente desde una petición HTTP. Por eso utilizo Zod para validar los datos en tiempo de ejecución. `safeParse` comprueba los datos y devuelve un resultado que indica si la validación ha sido correcta. Si es correcta, puedo trabajar con `resultadoValidacion.data`, que contiene los datos ya validados. Si falla, devuelvo un error 400 sin modificar los datos. También he aprendido que `.strict()` permite rechazar campos que no forman parte del esquema, como un `id` enviado desde el cliente.
+
+- Pruebas y resultados:
+  - POST con datos correctos y sin `id` → `201 Created`. El servidor genera el `id`.
+  - POST con un campo extra como `id` → `400 VALIDATION_ERROR`.
+  - PUT con datos correctos y sin `id` en el body → `200 OK`.
+  - PUT con un campo extra como `id` → `400 VALIDATION_ERROR`.
+  - GET después de un PUT inválido → los datos originales no se modifican.
+  - Opciones repetidas → `400 VALIDATION_ERROR`.
+  - Número incorrecto de opciones → `400 VALIDATION_ERROR`.
+  - `respuestaCorrecta` fuera del rango `0-3` → `400 VALIDATION_ERROR`.
+  - JSON mal formado → `400 INVALID_JSON`.
+  - Ruta inexistente → `404 ROUTE_NOT_FOUND`.
+  - DELETE `/api/questions` → `404 ROUTE_NOT_FOUND`, porque el borrado general ya no existe.
+  - DELETE `/api/questions/:id` → `204 No Content`.
+  - GET después de eliminar una pregunta → `404 QUESTION_NOT_FOUND`.
+  - `/health` sigue respondiendo correctamente → `200 OK`.
+  - `npm run typecheck` → correcto.
+  - `npm run build` → correcto.
+
+- Error y solución: Al conectar el middleware de errores tuve un error de TypeScript porque el middleware estaba exportado como `erroMiddleware`, mientras que en `app.ts` se intentaba importar como `errorMiddleware`. Lo solucioné haciendo que ambos utilizaran el mismo nombre. También comprobé que el middleware de errores tiene cuatro parámetros cuando corresponde al manejador de errores de Express.
+
+- Dudas: La principal duda que he resuelto en este reto ha sido entender la diferencia entre los tipos de TypeScript y la validación real de una petición HTTP. También he entendido mejor por qué es importante utilizar los datos devueltos por `safeParse` y no confiar directamente en `req.body`.
+
+- PR y correcciones: He trabajado en la rama `reto/04-validacion-errores`, partiendo de `develop`. He realizado las comprobaciones con Thunder Client y he verificado que `npm run typecheck` y `npm run build` funcionan correctamente. He abierto el PR hacia `develop` y lo dejo abierto para que sea revisado por el tutor. Las correcciones realizadas después de la revisión se mantienen en la misma rama y en el mismo PR.
 
 ## 05 · Prueba las rutas en Swagger
 
