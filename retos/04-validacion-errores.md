@@ -16,12 +16,12 @@
 
 ## Comprueba tu entrega
 
-- [ ] Texto vacío, opciones repetidas, número incorrecto de opciones y respuesta fuera de rango dan 400.
-- [ ] Campos extra como id se rechazan y no llegan a la colección.
-- [ ] Una petición inválida no modifica ningún dato y el servidor sigue atendiendo peticiones.
-- [ ] JSON mal formado devuelve un error JSON con 400; una ruta desconocida devuelve 404.
-- [ ] Los errores de la API usan el formato acordado; un fallo interno devuelve 500 sin detalles sensibles.
-- [ ] `npm run typecheck` y `npm run build` pasan; he comprobado que lo anterior sigue funcionando.
+- [x] Texto vacío, opciones repetidas, número incorrecto de opciones y respuesta fuera de rango dan 400.
+- [x] Campos extra como id se rechazan y no llegan a la colección.
+- [x] Una petición inválida no modifica ningún dato y el servidor sigue atendiendo peticiones.
+- [x] JSON mal formado devuelve un error JSON con 400; una ruta desconocida devuelve 404.
+- [x] Los errores de la API usan el formato acordado; un fallo interno devuelve 500 sin detalles sensibles.
+- [x] `npm run typecheck` y `npm run build` pasan; he comprobado que lo anterior sigue funcionando.
 - [ ] He actualizado `APRENDIZAJE.md`, anotado las pruebas y abierto el PR hacia `develop` sin hacer merge.
 
 ## Demostración al tutor
@@ -39,15 +39,17 @@ Empieza por un esquema pequeño. El middleware de errores de Express tiene cuatr
 
 ## Registro de entrega y revisión
 
-Estado inicial: **Pendiente**. Los checks son la autoevaluación del alumno; el cierre lo confirma el tutor.
+Estado inicial: **En progreso**. Los checks son la autoevaluación del alumno; el cierre lo confirma el tutor.
 
-- PR y commit revisado: pendiente.
-- Prueba correcta (petición/acción y resultado): pendiente.
-- Prueba inválida o fallo (petición/acción y resultado): pendiente.
-- Comandos y resultados: pendiente.
-- Dudas o correcciones: pendiente.
+- PR y commit revisado: pendiente. Se abrirá un PR desde `reto/04-validacion-errores` hacia `develop` cuando termine las comprobaciones.
+- Prueba correcta (petición/acción y resultado): POST de una pregunta válida → `201 Created`. También se comprobó que GET `/health` sigue respondiendo correctamente.
+- Prueba inválida o fallo (petición/acción y resultado): se probaron opciones vacías, opciones repetidas, número incorrecto de opciones, `respuestaCorrecta` fuera de rango y campos extra como `id`. Todas fueron rechazadas con `400 VALIDATION_ERROR`. También se comprobó que un PUT inválido no modifica los datos.
+- Comandos y resultados: `npm run typecheck` → correcto. `npm run build` → correcto. Las pruebas de la API se realizaron con Thunder Client.
+- Dudas o correcciones: Se corrigió un error de nombre en el middleware de errores: `erroMiddleware` pasó a llamarse `errorMiddleware` para coincidir con la importación y el uso en `app.ts`. También se comprobó el funcionamiento de los errores de JSON mal formado, rutas inexistentes y errores internos.
 - Revisión y aprobación del tutor: pendiente.
 - Merge en `develop`: pendiente.
+
+No empieces el siguiente reto hasta que este PR esté aprobado e integrado. Las correcciones van en la misma rama y el mismo PR.
 
 No empieces el siguiente reto hasta que este PR esté aprobado e integrado. Las correcciones van en la misma rama y el mismo PR.
 

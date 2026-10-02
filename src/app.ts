@@ -3,12 +3,26 @@ import express from "express";
 import { preguntas } from "./data/questions.js";
 // Importa el tipo Pregunta desde el archivo de tipos.
 import type { Pregunta } from "./types/question.js";
+// Importa el esquema de validación de preguntas desde el archivo de esquemas.
+import { questionSchema } from "./schemas/question.schema.js";
+// Importa el esquema de validación de ID de pregunta desde el archivo de esquemas.
+import { questionIdSchema } from "./schemas/question-id.schema.js";
+// Importa el middleware de manejo de errores de JSON desde el archivo de middlewares.
+import { jsonErrorMiddleware } from "./middlewares/error.middleware.js";
+// Importa el middleware de manejo de rutas no encontradas desde el archivo de middlewares.
+import { notFoundMiddleware } from "./middlewares/error.middleware.js";
+// Importa el middleware de manejo de errores internos desde el archivo de middlewares.
+import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 // Configura la aplicación. Abrir el puerto es responsabilidad de server.ts.
 export const app = express();
 
 // Convierte los cuerpos JSON de las peticiones en datos disponibles en req.body.
 app.use(express.json());
+
+// Captura los errores producidos por un JSON mal formado.
+app.use(jsonErrorMiddleware);
+
 // Guarda el siguiente ID disponible para la nueva pregunta. Si no hay preguntas, el ID será 1.
 let siguienteId =
   preguntas.length > 0
@@ -38,21 +52,34 @@ app.get("/api/questions", (_req, res) => {
   // Devuelve las preguntas públicas como respuesta JSON.
   res.json(preguntasPublicas); //
 });
-
+//////////////////////////////////
+//GET
+///////////////////////////////
 // Ruta para obtener una pregunta específica por su ID (sin la respuesta correcta).
 app.get("/api/questions/:id", (req, res) => {
-  const idTexto = req.params.id; // Obtiene el ID de la pregunta desde los parámetros de la URL.
-  if (!/^\d+$/.test(idTexto)) {
-    // Verifica si el ID es un número válido.
+  // Validamos los parámetros de la URL usando el esquema de Zod.
+  const resultadoValidacion = questionIdSchema.safeParse(req.params);
 
-    return res.status(400).json({ error: "El ID debe ser un número válido" }); // Si no es un número válido, devuelve un error 400.
+  // Si el ID no cumple el esquema, devolvemos un error 400.
+  if (!resultadoValidacion.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Los datos enviados no son válidos",
+      },
+    });
   }
-  const id = Number(idTexto); // Convierte el ID a número.
+
+  // Usamos el ID que Zod ha validado.
+  const id = Number(resultadoValidacion.data.id);
   const pregunta = preguntas.find((pregunta) => pregunta.id === id); // Busca la pregunta con el ID especificado.
-  // Si no se encuentra la pregunta, devuelve un error 404.
   if (!pregunta) {
+    // Si no existe una pregunta con ese ID, devolvemos un error 404.
     return res.status(404).json({
-      error: "Pregunta no encontrada",
+      error: {
+        code: "QUESTION_NOT_FOUND",
+        message: "Pregunta no encontrada",
+      },
     });
   }
   // Devuelve la pregunta encontrada (sin la respuesta correcta) como respuesta JSON.
@@ -63,77 +90,30 @@ app.get("/api/questions/:id", (req, res) => {
   });
 });
 
-//Crear una nueva pregunta
+///////////////////////////////
+//POST
+///////////////////////////////
+// Crear una nueva pregunta.
 app.post("/api/questions", (req, res) => {
-  // Comprobamos que el body existe y qu econtiene el formato de objeto
-  //Evitamos que la API devuelva un error 500 si el body no es un objeto.
-  if (
-    typeof req.body !== "object" ||
-    req.body === null ||
-    Array.isArray(req.body)
-  ) {
+  //Validamos el body de la petición usando el esquema de validación de preguntas.
+  const resultadoValidacion = questionSchema.safeParse(req.body);
+  //Si la validación falla, devolvemos un error 400 con un mensaje de error genérico.
+  if (!resultadoValidacion.success) {
     return res.status(400).json({
-      error: "El body de la petición debe ser un objeto JSON válido.",
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Los datos enviados no son válidos",
+      },
     });
   }
+  //Usamos los datos que zod nos devuelve tras la validación.
+  const { enunciado, opciones, respuestaCorrecta } = resultadoValidacion.data;
 
-  // Una vez comprobado que el body tiene el formato esperado,
-  // podemos recoger los datos enviados por el cliente.
-  const { enunciado, opciones, respuestaCorrecta } = req.body;
-  //Comprueba que el enunciado sea un texto y no esté vacío.
-  if (typeof enunciado !== "string" || enunciado.trim() === "") {
-    // Si el enunciado no es un texto o está vacío, devuelve un error 400.
-    return res.status(400).json({
-      error: "El enunciado no puede estar vacío.",
-    });
-  }
-  //Comprobamos que existen exactamente 4 opciones.
-  if (!Array.isArray(opciones) || opciones.length !== 4) {
-    // Si no hay exactamente 4 opciones, devuelve un error 400.
-    return res.status(400).json({
-      error: "Debe haber exactamente cuatro opciones.",
-    });
-  }
-  //Comprobamos que las opciones sean textos y no estén vacías.
-  if (!opciones.every((opcion) => typeof opcion === "string")) {
-    // Si alguna opción no es un texto, devuelve un error 400.
-    return res.status(400).json({
-      error: "Todas las opciones deben ser textos.",
-    });
-  }
-  //Comprobamos que ninguna de las opciones esté vacía.
-  if (opciones.some((opcion) => opcion.trim() === "")) {
-    // Si alguna opción está vacía, devuelve un error 400.
-    return res.status(400).json({
-      error: "Las opciones no pueden estar vacías.",
-    });
-  }
-  //Quitamos los espacios en blanco al principio y al final de cada opción.
-  const opcionesLimpias = opciones.map((opcion) => opcion.trim());
-  //Comprobamos que no haya opciones duplicadas.
-  if (new Set(opcionesLimpias).size !== 4) {
-    // Si el tamaño del conjunto de opciones es diferente de 4, significa que hay duplicados.
-    return res.status(400).json({
-      error: "Las opciones no pueden estar duplicadas.",
-    });
-  }
-
-  //Comprueba qu ela respuesta correcta sea un número y esté entre 0 y 3.
-  if (
-    typeof respuestaCorrecta !== "number" || // Verifica si la respuesta correcta es un número.
-    !Number.isInteger(respuestaCorrecta) || // Verifica si la respuesta correcta es un número entero.
-    respuestaCorrecta < 0 || // Verifica si la respuesta correcta es menor que 0.
-    respuestaCorrecta > 3 // Verifica si la respuesta correcta es mayor que 3.
-  ) {
-    return res.status(400).json({
-      error: "La respuesta correcta debe ser un número entero entre 0 y 3.",
-    });
-  }
   // Creamos un nuevo objeto de tipo Pregunta con los datos recibidos.
   const nuevaPregunta: Pregunta = {
     id: siguienteId++, // Asigna el siguiente ID disponible a la nueva pregunta.
     enunciado,
-    opciones: opcionesLimpias, // Utiliza las opciones limpias (sin espacios en blanco).
+    opciones, // Utiliza las opciones limpias (sin espacios en blanco).
     respuestaCorrecta,
   };
   // Añadimos la nueva pregunta al array de preguntas.
@@ -145,89 +125,55 @@ app.post("/api/questions", (req, res) => {
     opciones: nuevaPregunta.opciones,
   });
 });
-
+////////////////////////////////
+//PUT
+///////////////////////////////
 // Editar una pregunta existente por su ID (sustituye enunciado, opciones y respuestaCorrecta).
 app.put("/api/questions/:id", (req, res) => {
-  // Obtiene el ID de la pregunta desde los parámetros de la URL.
-  const idTexto = req.params.id;
-  // Verifica si el ID es un número válido.
-  if (!/^\d+$/.test(idTexto)) {
-    return res.status(400).json({ error: "El ID debe ser un número válido" });
+  // Validamos los parámetros de la URL usando el esquema de Zod.
+  const resultadoValidacionId = questionIdSchema.safeParse(req.params);
+
+  // Si el ID no cumple el esquema, devolvemos un error 400.
+  if (!resultadoValidacionId.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Los datos enviados no son válidos",
+      },
+    });
   }
-  const id = Number(idTexto);
+
+  // Usamos el ID que Zod ha validado.
+  const id = Number(resultadoValidacionId.data.id);
   // Busca la pregunta con el ID especificado.
   const pregunta = preguntas.find((pregunta) => pregunta.id === id);
-  // Si no se encuentra la pregunta, devuelve un error 404.
   if (!pregunta) {
+    // Si no se encuentra la pregunta, devuelve un error 404.
     return res.status(404).json({
-      error: "Pregunta no encontrada",
+      error: {
+        code: "QUESTION_NOT_FOUND",
+        message: "Pregunta no encontrada",
+      },
     });
   }
+  // Validamos el body de la petición usando el mismo esquema que usamos al crear preguntas.
+  const resultadoValidacion = questionSchema.safeParse(req.body);
 
-  // Comprueba que el body existe y que contiene el formato de objeto.
-  // Evita que la API devuelva un error 500 si el body no es un objeto.
-  if (
-    typeof req.body !== "object" ||
-    req.body === null ||
-    Array.isArray(req.body)
-  ) {
+  // Si la validación falla, devolvemos un error 400 con un formato consistente.
+  if (!resultadoValidacion.success) {
     return res.status(400).json({
-      error: "El body de la petición debe ser un objeto JSON válido.",
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Los datos enviados no son válidos",
+      },
     });
   }
+  // Usamos únicamente los datos que Zod ha validado correctamente.
+  const { enunciado, opciones, respuestaCorrecta } = resultadoValidacion.data;
 
-  // Una vez comprobado que el body tiene el formato esperado,
-  // podemos recoger los datos enviados por el cliente.
-  const { enunciado, opciones, respuestaCorrecta } = req.body;
-  // Comprueba que el enunciado sea un texto y no esté vacío.
-  if (typeof enunciado !== "string" || enunciado.trim() === "") {
-    return res.status(400).json({
-      error: "El enunciado no puede estar vacío.",
-    });
-  }
-  // Comprueba que existan exactamente 4 opciones.
-  if (!Array.isArray(opciones) || opciones.length !== 4) {
-    return res.status(400).json({
-      error: "Debe haber exactamente cuatro opciones.",
-    });
-  }
-  //Comprobamos que las opciones sean textos y no estén vacías.
-  //Esto evita errores al utilizar el método trim() en opciones que no sean textos.
-  if (!opciones.every((opcion) => typeof opcion === "string")) {
-    return res.status(400).json({
-      error: "Todas las opciones deben ser textos.",
-    });
-  }
-  // Comprueba que ninguna de las opciones esté vacía.
-  if (opciones.some((opcion) => opcion.trim() === "")) {
-    return res.status(400).json({
-      error: "Las opciones no pueden estar vacías.",
-    });
-  }
-
-  // Quitamos los espacios en blanco al principio y al final de cada opción.
-  const opcionesLimpias = opciones.map((opcion) => opcion.trim());
-
-  // Comprueba que no haya opciones duplicadas después de quitar los espacios.
-  if (new Set(opcionesLimpias).size !== 4) {
-    return res.status(400).json({
-      error: "Las opciones no pueden estar duplicadas.",
-    });
-  }
-  // Comprueba que la respuesta correcta sea un número entero entre 0 y 3.
-  if (
-    typeof respuestaCorrecta !== "number" ||
-    !Number.isInteger(respuestaCorrecta) ||
-    respuestaCorrecta < 0 ||
-    respuestaCorrecta > 3
-  ) {
-    return res.status(400).json({
-      error: "La respuesta correcta debe ser un número entero entre 0 y 3.",
-    });
-  }
   // Sustituye todos los campos editables de la pregunta (sin cambios parciales).
   pregunta.enunciado = enunciado;
-  pregunta.opciones = opcionesLimpias; // Sustituye las opciones con las opciones limpias (sin espacios en blanco).
+  pregunta.opciones = opciones; // Sustituye las opciones con las opciones limpias (sin espacios en blanco).
   pregunta.respuestaCorrecta = respuestaCorrecta;
   // Devolvemos la pregunta actualizada sin revelar la respuesta correcta.
   return res.status(200).json({
@@ -237,20 +183,35 @@ app.put("/api/questions/:id", (req, res) => {
   });
 });
 
-//Eliminar l apregunta existente por su ID.
+////////////////////////////////
+//DELETE
+///////////////////////////////
+// Eliminar una pregunta existente por su ID.
 app.delete("/api/questions/:id", (req, res) => {
-  const idTexto = req.params.id; // Obtiene el ID de la pregunta desde los parámetros de la URL.
-  if (!/^\d+$/.test(idTexto)) {
-    // Verifica si el ID es un número válido.
-    return res.status(400).json({ error: "El ID debe ser un número válido" });
+  // Validamos los parámetros de la URL usando el esquema de Zod.
+  const resultadoValidacionId = questionIdSchema.safeParse(req.params);
+
+  // Si el ID no cumple el esquema, devolvemos un error 400.
+  if (!resultadoValidacionId.success) {
+    return res.status(400).json({
+      error: {
+        code: "VALIDATION_ERROR",
+        message: "Los datos enviados no son válidos",
+      },
+    });
   }
-  const id = Number(idTexto); // Convierte el ID a número.
+
+  // Usamos el ID que Zod ha validado.
+  const id = Number(resultadoValidacionId.data.id);
   //Busca la posición de la pregunta dentro del array de preguntas.
   const index = preguntas.findIndex((pregunta) => pregunta.id === id);
   if (index === -1) {
     // Si no se encuentra la pregunta, devuelve un error 404.
     return res.status(404).json({
-      error: "Pregunta no encontrada",
+      error: {
+        code: "QUESTION_NOT_FOUND",
+        message: "Pregunta no encontrada",
+      },
     });
   }
   //Elimina la pregunta del array de preguntas usando la posición encontrada.
@@ -258,3 +219,16 @@ app.delete("/api/questions/:id", (req, res) => {
   //Indica que la pregunta se ha eliminado correctamente.
   return res.status(204).send();
 });
+
+// Eliminar todas las preguntas existentes.
+app.delete("/api/questions", (_req, res) => {
+  // Elimina todas las preguntas del array de preguntas.
+  preguntas.length = 0;
+
+  return res.status(204).send();
+});
+
+// Si ninguna ruta anterior coincide con la petición, devolvemos un error 404.
+app.use(notFoundMiddleware);
+// Los errores inesperados no deben mostrar detalles internos al cliente, solo un mensaje genérico.
+app.use(errorMiddleware);
