@@ -113,22 +113,20 @@ En cada reto anota:
 - Conceptos y explicación propia: TypeScript comprueba los tipos durante el desarrollo, pero no valida los datos que llegan realmente desde una petición HTTP. Por eso utilizo Zod para validar los datos en tiempo de ejecución. `safeParse` comprueba los datos y devuelve un resultado que indica si la validación ha sido correcta. Si es correcta, puedo trabajar con `resultadoValidacion.data`, que contiene los datos ya validados. Si falla, devuelvo un error 400 sin modificar los datos. También he aprendido que `.strict()` permite rechazar campos que no forman parte del esquema, como un `id` enviado desde el cliente.
 
 - Pruebas y resultados:
-  - POST con datos correctos → `201 Created`.
-  - POST con una opción vacía → `400 VALIDATION_ERROR`.
-  - POST con opciones repetidas → `400 VALIDATION_ERROR`.
-  - POST con un número incorrecto de opciones → `400 VALIDATION_ERROR`.
-  - POST con `respuestaCorrecta` fuera del rango `0-3` → `400 VALIDATION_ERROR`.
+  - POST con datos correctos y sin `id` → `201 Created`. El servidor genera el `id`.
   - POST con un campo extra como `id` → `400 VALIDATION_ERROR`.
-  - PUT con datos correctos → `200 OK`.
-  - PUT con datos inválidos → `400 VALIDATION_ERROR` y los datos originales no se modifican.
-  - GET con un ID inválido como `/api/questions/hola` → `400 VALIDATION_ERROR`.
-  - GET con un ID inexistente → `404 QUESTION_NOT_FOUND`.
-  - DELETE con un ID inválido → `400 VALIDATION_ERROR`.
-  - DELETE con un ID inexistente → `404 QUESTION_NOT_FOUND`.
+  - PUT con datos correctos y sin `id` en el body → `200 OK`.
+  - PUT con un campo extra como `id` → `400 VALIDATION_ERROR`.
+  - GET después de un PUT inválido → los datos originales no se modifican.
+  - Opciones repetidas → `400 VALIDATION_ERROR`.
+  - Número incorrecto de opciones → `400 VALIDATION_ERROR`.
+  - `respuestaCorrecta` fuera del rango `0-3` → `400 VALIDATION_ERROR`.
   - JSON mal formado → `400 INVALID_JSON`.
   - Ruta inexistente → `404 ROUTE_NOT_FOUND`.
-  - Error interno → `500 INTERNAL_SERVER_ERROR` sin mostrar detalles internos.
-  - `/health` sigue respondiendo correctamente después de los errores.
+  - DELETE `/api/questions` → `404 ROUTE_NOT_FOUND`, porque el borrado general ya no existe.
+  - DELETE `/api/questions/:id` → `204 No Content`.
+  - GET después de eliminar una pregunta → `404 QUESTION_NOT_FOUND`.
+  - `/health` sigue respondiendo correctamente → `200 OK`.
   - `npm run typecheck` → correcto.
   - `npm run build` → correcto.
 
@@ -136,7 +134,7 @@ En cada reto anota:
 
 - Dudas: La principal duda que he resuelto en este reto ha sido entender la diferencia entre los tipos de TypeScript y la validación real de una petición HTTP. También he entendido mejor por qué es importante utilizar los datos devueltos por `safeParse` y no confiar directamente en `req.body`.
 
-- PR y correcciones: He trabajado en la rama `reto/04-validacion-errores`, partiendo de `develop`. He realizado las comprobaciones con Thunder Client y he verificado que `npm run typecheck` y `npm run build` funcionan correctamente. El PR se abrirá hacia `develop` y quedará abierto para que sea revisado y corregido si el tutor encuentra algún problema.
+- PR y correcciones: He trabajado en la rama `reto/04-validacion-errores`, partiendo de `develop`. He realizado las comprobaciones con Thunder Client y he verificado que `npm run typecheck` y `npm run build` funcionan correctamente. He abierto el PR hacia `develop` y lo dejo abierto para que sea revisado por el tutor. Las correcciones realizadas después de la revisión se mantienen en la misma rama y en el mismo PR.
 
 ## 05 · Prueba las rutas en Swagger
 

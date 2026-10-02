@@ -3,7 +3,6 @@ import { z } from "zod";
 //Define como debe ser una pregunta válida recibida por la API, reglas de como debe ser una pregunta.
 export const questionSchema = z
   .object({
-    id: z.string().regex(/^\d+$/), // El ID debe ser un número entero positivo representado como string
     enunciado: z.string().trim().min(1), // El enunciado no puede estar vacío
     opciones: z // Las opciones deben ser un array de strings, cada uno no vacío, y debe haber exactamente 4 opciones únicas.
       .array(z.string().trim().min(1))

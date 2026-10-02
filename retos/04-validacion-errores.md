@@ -22,7 +22,7 @@
 - [x] JSON mal formado devuelve un error JSON con 400; una ruta desconocida devuelve 404.
 - [x] Los errores de la API usan el formato acordado; un fallo interno devuelve 500 sin detalles sensibles.
 - [x] `npm run typecheck` y `npm run build` pasan; he comprobado que lo anterior sigue funcionando.
-- [ ] He actualizado `APRENDIZAJE.md`, anotado las pruebas y abierto el PR hacia `develop` sin hacer merge.
+- [x] He actualizado `APRENDIZAJE.md`, anotado las pruebas y abierto el PR hacia `develop` sin hacer merge.
 
 ## Demostración al tutor
 
@@ -41,15 +41,13 @@ Empieza por un esquema pequeño. El middleware de errores de Express tiene cuatr
 
 Estado inicial: **En progreso**. Los checks son la autoevaluación del alumno; el cierre lo confirma el tutor.
 
-- PR y commit revisado: pendiente. Se abrirá un PR desde `reto/04-validacion-errores` hacia `develop` cuando termine las comprobaciones.
-- Prueba correcta (petición/acción y resultado): POST de una pregunta válida → `201 Created`. También se comprobó que GET `/health` sigue respondiendo correctamente.
-- Prueba inválida o fallo (petición/acción y resultado): se probaron opciones vacías, opciones repetidas, número incorrecto de opciones, `respuestaCorrecta` fuera de rango y campos extra como `id`. Todas fueron rechazadas con `400 VALIDATION_ERROR`. También se comprobó que un PUT inválido no modifica los datos.
+- PR y commit revisado: [PR #4](https://github.com/josepracticas123/trivia-app-backend/pull/4) abierto desde `reto/04-validacion-errores` hacia `develop`. Pendiente de revisión y aprobación del tutor.
+- Prueba correcta (petición/acción y resultado): POST de una pregunta válida sin `id` → `201 Created`, generando el `id` desde el servidor. También se comprobó que PUT válido → `200 OK`, DELETE individual → `204 No Content` y GET `/health` → `200 OK`.
+- Prueba inválida o fallo (petición/acción y resultado): POST y PUT con campos extra como `id` → `400 VALIDATION_ERROR`. También se probaron opciones repetidas, número incorrecto de opciones y `respuestaCorrecta` fuera de rango, todos con `400 VALIDATION_ERROR`. Un PUT inválido no modifica los datos. DELETE `/api/questions` → `404 ROUTE_NOT_FOUND` y JSON mal formado → `400 INVALID_JSON`.
 - Comandos y resultados: `npm run typecheck` → correcto. `npm run build` → correcto. Las pruebas de la API se realizaron con Thunder Client.
-- Dudas o correcciones: Se corrigió un error de nombre en el middleware de errores: `erroMiddleware` pasó a llamarse `errorMiddleware` para coincidir con la importación y el uso en `app.ts`. También se comprobó el funcionamiento de los errores de JSON mal formado, rutas inexistentes y errores internos.
+- Dudas o correcciones: Se corrigió el esquema de preguntas para que no acepte `id` y se mantuviera `.strict()`. También se eliminó el endpoint de borrado general `DELETE /api/questions`. Se corrigió el nombre del middleware de errores de `erroMiddleware` a `errorMiddleware`. Además, se comprobó el funcionamiento de los errores de JSON mal formado, rutas inexistentes y errores internos.
 - Revisión y aprobación del tutor: pendiente.
 - Merge en `develop`: pendiente.
-
-No empieces el siguiente reto hasta que este PR esté aprobado e integrado. Las correcciones van en la misma rama y el mismo PR.
 
 No empieces el siguiente reto hasta que este PR esté aprobado e integrado. Las correcciones van en la misma rama y el mismo PR.
 

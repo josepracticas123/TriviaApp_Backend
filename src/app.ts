@@ -220,14 +220,6 @@ app.delete("/api/questions/:id", (req, res) => {
   return res.status(204).send();
 });
 
-// Eliminar todas las preguntas existentes.
-app.delete("/api/questions", (_req, res) => {
-  // Elimina todas las preguntas del array de preguntas.
-  preguntas.length = 0;
-
-  return res.status(204).send();
-});
-
 // Si ninguna ruta anterior coincide con la petición, devolvemos un error 404.
 app.use(notFoundMiddleware);
 // Los errores inesperados no deben mostrar detalles internos al cliente, solo un mensaje genérico.
