@@ -9,14 +9,11 @@ export const app = express();
 
 // Convierte los cuerpos JSON de las peticiones en datos disponibles en req.body.
 app.use(express.json());
-
- //Guarda el siguiente ID disponible para la nueva pregunta. Si no hay preguntas, el ID será 1.
-  let siguienteId =
-    preguntas.length > 0
-      ? Math.max(...preguntas.map((pregunta) => pregunta.id)) + 1
-      : 1;
-
-
+// Guarda el siguiente ID disponible para la nueva pregunta. Si no hay preguntas, el ID será 1.
+let siguienteId =
+  preguntas.length > 0
+    ? Math.max(...preguntas.map((pregunta) => pregunta.id)) + 1
+    : 1;
 // Ruta de bienvenida de la aplicación.
 app.get("/", (_req, res) => {
   res.json({ message: "Bienvenido a TriviaApp Backend" });
@@ -27,7 +24,7 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-// Ruta para obtener todas las preguntas públicas (sin la respuesta correcta).
+//Ruta para obtener todas las preguntas públicas (sin la respuesta correcta).
 app.get("/api/questions", (_req, res) => {
   const preguntasPublicas = preguntas.map((pregunta) => {
     // Devuelve solo los campos públicos de la pregunta, excluyendo la respuesta correcta.
@@ -68,8 +65,20 @@ app.get("/api/questions/:id", (req, res) => {
 
 //Crear una nueva pregunta
 app.post("/api/questions", (req, res) => {
- 
-  //Recoge los datos enviados en el body de la petición.
+  // Comprobamos que el body existe y qu econtiene el formato de objeto
+  //Evitamos que la API devuelva un error 500 si el body no es un objeto.
+  if (
+    typeof req.body !== "object" ||
+    req.body === null ||
+    Array.isArray(req.body)
+  ) {
+    return res.status(400).json({
+      error: "El body de la petición debe ser un objeto JSON válido.",
+    });
+  }
+
+  // Una vez comprobado que el body tiene el formato esperado,
+  // podemos recoger los datos enviados por el cliente.
   const { enunciado, opciones, respuestaCorrecta } = req.body;
   //Comprueba que el enunciado sea un texto y no esté vacío.
   if (typeof enunciado !== "string" || enunciado.trim() === "") {
@@ -85,6 +94,13 @@ app.post("/api/questions", (req, res) => {
       error: "Debe haber exactamente cuatro opciones.",
     });
   }
+  //Comprobamos que las opciones sean textos y no estén vacías.
+  if (!opciones.every((opcion) => typeof opcion === "string")) {
+    // Si alguna opción no es un texto, devuelve un error 400.
+    return res.status(400).json({
+      error: "Todas las opciones deben ser textos.",
+    });
+  }
   //Comprobamos que ninguna de las opciones esté vacía.
   if (opciones.some((opcion) => opcion.trim() === "")) {
     // Si alguna opción está vacía, devuelve un error 400.
@@ -92,8 +108,10 @@ app.post("/api/questions", (req, res) => {
       error: "Las opciones no pueden estar vacías.",
     });
   }
+  //Quitamos los espacios en blanco al principio y al final de cada opción.
+  const opcionesLimpias = opciones.map((opcion) => opcion.trim());
   //Comprobamos que no haya opciones duplicadas.
-  if (new Set(opciones).size !== 4) {
+  if (new Set(opcionesLimpias).size !== 4) {
     // Si el tamaño del conjunto de opciones es diferente de 4, significa que hay duplicados.
     return res.status(400).json({
       error: "Las opciones no pueden estar duplicadas.",
@@ -115,7 +133,7 @@ app.post("/api/questions", (req, res) => {
   const nuevaPregunta: Pregunta = {
     id: siguienteId++, // Asigna el siguiente ID disponible a la nueva pregunta.
     enunciado,
-    opciones,
+    opciones: opcionesLimpias, // Utiliza las opciones limpias (sin espacios en blanco).
     respuestaCorrecta,
   };
   // Añadimos la nueva pregunta al array de preguntas.
@@ -145,7 +163,21 @@ app.put("/api/questions/:id", (req, res) => {
       error: "Pregunta no encontrada",
     });
   }
-  // Recoge los datos enviados en el body de la petición.
+
+  // Comprueba que el body existe y que contiene el formato de objeto.
+  // Evita que la API devuelva un error 500 si el body no es un objeto.
+  if (
+    typeof req.body !== "object" ||
+    req.body === null ||
+    Array.isArray(req.body)
+  ) {
+    return res.status(400).json({
+      error: "El body de la petición debe ser un objeto JSON válido.",
+    });
+  }
+
+  // Una vez comprobado que el body tiene el formato esperado,
+  // podemos recoger los datos enviados por el cliente.
   const { enunciado, opciones, respuestaCorrecta } = req.body;
   // Comprueba que el enunciado sea un texto y no esté vacío.
   if (typeof enunciado !== "string" || enunciado.trim() === "") {
@@ -159,14 +191,25 @@ app.put("/api/questions/:id", (req, res) => {
       error: "Debe haber exactamente cuatro opciones.",
     });
   }
+  //Comprobamos que las opciones sean textos y no estén vacías.
+  //Esto evita errores al utilizar el método trim() en opciones que no sean textos.
+  if (!opciones.every((opcion) => typeof opcion === "string")) {
+    return res.status(400).json({
+      error: "Todas las opciones deben ser textos.",
+    });
+  }
   // Comprueba que ninguna de las opciones esté vacía.
   if (opciones.some((opcion) => opcion.trim() === "")) {
     return res.status(400).json({
       error: "Las opciones no pueden estar vacías.",
     });
   }
-  // Comprueba que no haya opciones duplicadas.
-  if (new Set(opciones).size !== 4) {
+
+  // Quitamos los espacios en blanco al principio y al final de cada opción.
+  const opcionesLimpias = opciones.map((opcion) => opcion.trim());
+
+  // Comprueba que no haya opciones duplicadas después de quitar los espacios.
+  if (new Set(opcionesLimpias).size !== 4) {
     return res.status(400).json({
       error: "Las opciones no pueden estar duplicadas.",
     });
@@ -184,7 +227,7 @@ app.put("/api/questions/:id", (req, res) => {
   }
   // Sustituye todos los campos editables de la pregunta (sin cambios parciales).
   pregunta.enunciado = enunciado;
-  pregunta.opciones = opciones;
+  pregunta.opciones = opcionesLimpias; // Sustituye las opciones con las opciones limpias (sin espacios en blanco).
   pregunta.respuestaCorrecta = respuestaCorrecta;
   // Devolvemos la pregunta actualizada sin revelar la respuesta correcta.
   return res.status(200).json({
