@@ -1,4 +1,9 @@
+// Este archivo contiene la configuración principal de la aplicación Express, incluyendo las rutas y middlewares necesarios para manejar las peticiones HTTP relacionadas con las preguntas de trivia. Se definen rutas para obtener, crear, actualizar y eliminar preguntas, así como middlewares para manejar errores y validar datos de entrada.
 import express from "express";
+// Importa Swagger UI para mostrar la documentación de la API en /docs.
+import swaggerUi from "swagger-ui-express";
+// Importa la especificación OpenAPI generada desde swagger.ts.
+import { swaggerSpec } from "./docs/swagger.js";
 // Importa las preguntas desde el archivo de datos.
 import { preguntas } from "./data/questions.js";
 // Importa el tipo Pregunta desde el archivo de tipos.
@@ -16,6 +21,14 @@ import { errorMiddleware } from "./middlewares/error.middleware.js";
 
 // Configura la aplicación. Abrir el puerto es responsabilidad de server.ts.
 export const app = express();
+
+// Muestra la documentación de la API en la ruta /docs usando Swagger UI.
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Devuelve el documento OpenAPI en formato JSON en la ruta /api/openapi.json
+app.get("/api/openapi.json", (_req, res) => {
+  res.json(swaggerSpec);
+});
 
 // Convierte los cuerpos JSON de las peticiones en datos disponibles en req.body.
 app.use(express.json());
@@ -38,7 +51,16 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-//Ruta para obtener todas las preguntas públicas (sin la respuesta correcta).
+/**
+ * @openapi
+ * /api/questions:
+ *   get:
+ *     summary: Obtener todas las preguntas
+ *     description: Devuelve todas las preguntas sin mostrar la respuesta correcta.
+ *     responses:
+ *       200:
+ *         description: Lista de preguntas
+ */
 app.get("/api/questions", (_req, res) => {
   const preguntasPublicas = preguntas.map((pregunta) => {
     // Devuelve solo los campos públicos de la pregunta, excluyendo la respuesta correcta.
@@ -93,7 +115,48 @@ app.get("/api/questions/:id", (req, res) => {
 ///////////////////////////////
 //POST
 ///////////////////////////////
-// Crear una nueva pregunta.
+/**
+ * @openapi
+ * /api/questions:
+ *   post:
+ *     summary: Crear una pregunta
+ *     description: Crea una nueva pregunta de trivia.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - enunciado
+ *               - opciones
+ *               - respuestaCorrecta
+ *             properties:
+ *               enunciado:
+ *                 type: string
+ *                 example: ¿Cuál es la capital de España?
+ *               opciones:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 minItems: 4
+ *                 maxItems: 4
+ *                 example:
+ *                   - Madrid
+ *                   - Barcelona
+ *                   - Valencia
+ *                   - Sevilla
+ *               respuestaCorrecta:
+ *                 type: integer
+ *                 minimum: 0
+ *                 maximum: 3
+ *                 example: 0
+ *     responses:
+ *       201:
+ *         description: Pregunta creada correctamente
+ *       400:
+ *         description: Datos enviados no válidos
+ */
 app.post("/api/questions", (req, res) => {
   //Validamos el body de la petición usando el esquema de validación de preguntas.
   const resultadoValidacion = questionSchema.safeParse(req.body);
@@ -128,7 +191,57 @@ app.post("/api/questions", (req, res) => {
 ////////////////////////////////
 //PUT
 ///////////////////////////////
-// Editar una pregunta existente por su ID (sustituye enunciado, opciones y respuestaCorrecta).
+/**
+ * @openapi
+ * /api/questions/{id}:
+ *   put:
+ *     summary: Actualizar una pregunta
+ *     description: Sustituye los datos de una pregunta existente.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la pregunta
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - enunciado
+ *               - opciones
+ *               - respuestaCorrecta
+ *             properties:
+ *               enunciado:
+ *                 type: string
+ *                 example: ¿Cuál es la capital de Francia?
+ *               opciones:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 minItems: 4
+ *                 maxItems: 4
+ *                 example:
+ *                   - París
+ *                   - Madrid
+ *                   - Roma
+ *                   - Berlín
+ *               respuestaCorrecta:
+ *                 type: integer
+ *                 minimum: 0
+ *                 maximum: 3
+ *                 example: 0
+ *     responses:
+ *       200:
+ *         description: Pregunta actualizada correctamente
+ *       400:
+ *         description: Datos o ID no válidos
+ *       404:
+ *         description: Pregunta no encontrada
+ */
 app.put("/api/questions/:id", (req, res) => {
   // Validamos los parámetros de la URL usando el esquema de Zod.
   const resultadoValidacionId = questionIdSchema.safeParse(req.params);
@@ -186,7 +299,27 @@ app.put("/api/questions/:id", (req, res) => {
 ////////////////////////////////
 //DELETE
 ///////////////////////////////
-// Eliminar una pregunta existente por su ID.
+/**
+ * @openapi
+ * /api/questions/{id}:
+ *   delete:
+ *     summary: Eliminar una pregunta
+ *     description: Elimina una pregunta existente por su ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID de la pregunta
+ *     responses:
+ *       204:
+ *         description: Pregunta eliminada correctamente
+ *       400:
+ *         description: ID no válido
+ *       404:
+ *         description: Pregunta no encontrada
+ */
 app.delete("/api/questions/:id", (req, res) => {
   // Validamos los parámetros de la URL usando el esquema de Zod.
   const resultadoValidacionId = questionIdSchema.safeParse(req.params);
