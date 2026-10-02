@@ -72,13 +72,20 @@ En cada reto anota:
 
 - Lo que he construido: He añadido las operaciones POST, PUT y DELETE para crear, modificar y eliminar preguntas. También he añadido validaciones manuales y un contador para que los IDs no se reutilicen durante la ejecución del servidor.
 
-- Conceptos y explicación propia: He aprendido que POST sirve para crear datos, PUT para sustituir los datos editables de una pregunta y DELETE para eliminarla. También he aprendido que los datos están almacenados en memoria, por lo que se pierden al reiniciar el servidor.
+- Conceptos y explicación propia: He aprendido que POST sirve para crear datos, PUT para sustituir los datos editables de una pregunta y DELETE para eliminarla. También he aprendido que los datos están almacenados en memoria, por lo que se pierden al reiniciar el servidor. Además, he aprendido a validar el `body` antes de extraer sus campos y a comprobar que las opciones sean textos antes de utilizar métodos como `trim()`.
 
 - Pruebas y resultados:
   - POST válido → 201 Created.
   - GET de la pregunta creada → 200 OK y sin mostrar `respuestaCorrecta`.
   - PUT válido → 200 OK.
-  - PUT inválido → 400 y los datos no cambian.
+  - PUT sin body → 400 Bad Request.
+  - POST sin body → 400 Bad Request.
+  - POST con una opción numérica → 400 Bad Request.
+  - POST con una opción `null` → 400 Bad Request.
+  - PUT con una opción numérica → 400 Bad Request.
+  - PUT con una opción `null` → 400 Bad Request.
+  - POST con opciones `"a"` y `" a "` → 400 Bad Request por opciones duplicadas después de quitar los espacios.
+  - PUT inválido por opciones duplicadas → 400 Bad Request y la pregunta no cambia al comprobarla posteriormente con GET.
   - DELETE válido → 204 No Content.
   - GET después de eliminar → 404 Not Found.
   - DELETE de un ID inexistente → 404 Not Found.
@@ -87,11 +94,17 @@ En cada reto anota:
   - `npm run typecheck` → correcto.
   - `npm run build` → correcto.
 
-- Error y solución: Al probar un POST, envié la petición sin body JSON y `req.body` era `undefined`. Lo solucioné seleccionando Body → JSON en Thunder Client y enviando los datos correctamente.
+- Error y solución: Al principio, un POST o PUT sin body provocaba un error 500 porque `req.body` era `undefined` al intentar extraer sus propiedades. Lo solucioné comprobando primero que el body existe y tiene formato de objeto. También tuve un error 500 cuando una opción era numérica o `null`, porque se intentaba utilizar `trim()` sobre un valor que no era un texto. Lo solucioné comprobando primero que todas las opciones fueran `string`. Además, normalicé las opciones quitando los espacios de los extremos antes de comprobar duplicados.
 
-- Dudas: He entendido la diferencia entre los datos enviados en la URL y los datos enviados en el body. En DELETE el ID se envía en la URL y no hace falta body.
+- Dudas: He entendido mejor la diferencia entre los datos enviados en la URL y los datos enviados en el body. También he entendido por qué es importante validar los datos antes de utilizar métodos propios de un tipo concreto, como `trim()` sobre un `string`.
 
-- PR y correcciones: Pendiente de abrir el PR hacia `develop` y de la revisión del tutor.
+- PR y correcciones:
+  - PR del reto 03 hacia `develop`: [PR #3](https://github.com/josepracticas123/trivia-app-backend/pull/3)
+  - Correcciones solicitadas por el tutor: completadas y comprobadas.
+  - `npm run typecheck` → correcto.
+  - `npm run build` → correcto.
+  - Última comprobación: realizada.
+  - La PR se mantiene abierta para revisión y merge por parte del tutor.
 
 ## 04 · Valida las peticiones
 
